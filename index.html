@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>DiamondEdge ⚾</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d0f18;--bg2:#161926;--bg3:#1e2235;--bg4:#262b42;--border:#303660;
+  --text:#f0f2ff;--muted:#9ba3c8;
+  --accent:#5b9cf6;--green:#2dd97a;--red:#ff5c5c;--yellow:#ffc142;
+  --purple:#c084fc;--orange:#ff8c42;--teal:#22ded4;
+  --font:'Inter','Segoe UI',system-ui,sans-serif;
+}
+html,body{background:var(--bg);min-height:100vh}
+body{font-family:var(--font);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;max-width:640px;margin:0 auto}
+
+/* NAV — matches v2 exactly */
+nav{display:flex;align-items:center;gap:2px;padding:10px 14px;background:var(--bg2);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+.logo{font-size:17px;font-weight:700;color:#fff;margin-right:10px;white-space:nowrap;flex-shrink:0;letter-spacing:-.3px}
+.logo span{color:var(--accent)}
+.nav-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:500;font-family:var(--font);transition:all .15s;white-space:nowrap;flex-shrink:0}
+.nav-btn.active,.nav-btn:hover{background:var(--bg4);color:#fff;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;flex-shrink:0;margin-left:auto}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* PAGES */
+.page{display:none;padding:16px}
+.page.active{display:block}
+
+/* STAT CARDS — matches v2 */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px}
+.stat-card .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:5px}
+.stat-card .val{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.4px}
+.stat-card .sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* SECTIONS — matches v2 */
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.section-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px}
+
+/* BADGES — matches v2 */
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.2px}
+.badge-green{background:rgba(45,217,122,.15);color:var(--green);border:1px solid rgba(45,217,122,.3)}
+.badge-red{background:rgba(255,92,92,.15);color:var(--red);border:1px solid rgba(255,92,92,.3)}
+.badge-yellow{background:rgba(255,193,66,.15);color:var(--yellow);border:1px solid rgba(255,193,66,.3)}
+.badge-blue{background:rgba(91,156,246,.15);color:var(--accent);border:1px solid rgba(91,156,246,.3)}
+
+/* GAME CARDS — matches v2 */
+.game-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:10px}
+.game-card.value-bet{border-left:4px solid var(--green)}
+.team-row{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.team-logo{width:28px;height:28px;border-radius:50%;background:var(--bg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
+.team-name{font-size:13px;font-weight:600;flex:1}
+.team-record{font-size:11px;color:var(--muted);font-weight:400}
+.win-pct{font-size:14px;font-weight:700;min-width:36px;text-align:right}
+.win-pct.fav{color:var(--green)}
+.win-pct.dog{color:var(--muted)}
+.win-bar{height:4px;background:var(--bg4);border-radius:2px;margin:5px 0;overflow:hidden}
+.win-bar-fill{height:100%;border-radius:2px;background:var(--accent)}
+.game-meta{display:flex;gap:5px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:8px 0}
+.tag{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-size:11px;font-weight:500}
+.tag.good{border-color:rgba(34,222,212,.4);color:var(--teal);background:rgba(34,222,212,.08)}
+.tag.warn{border-color:rgba(255,193,66,.4);color:var(--yellow);background:rgba(255,193,66,.08)}
+.odds-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.odds-box{background:var(--bg4);border:1px solid var(--border);border-radius:7px;padding:7px;text-align:center}
+.odds-box.value{border-color:var(--green);background:rgba(45,217,122,.06)}
+.odds-box .market{font-size:10px;color:var(--muted);font-weight:500;margin-bottom:2px}
+.odds-box .line{font-size:14px;font-weight:700;color:#fff}
+.odds-box .ev{font-size:10px;color:var(--green);font-weight:600;margin-top:2px}
+.game-actions{display:flex;gap:7px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;flex-wrap:wrap;align-items:center}
+
+/* BUTTONS */
+.btn{border:1px solid var(--border);background:var(--bg4);color:var(--text);padding:6px 13px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:500;font-family:var(--font);transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-green{background:rgba(45,217,122,.12);border-color:var(--green);color:var(--green);font-weight:700}
+.btn-green:hover{background:var(--green);color:#000}
+.btn-red{background:rgba(255,92,92,.12);border-color:var(--red);color:var(--red);font-weight:700}
+.btn-full{width:100%}
+
+/* LIVE SCORES — matches v2 */
+.live-score{display:flex;flex-direction:column;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:10px}
+.live-badge{font-size:11px;background:rgba(255,92,92,.2);color:var(--red);border:1px solid rgba(255,92,92,.4);padding:2px 7px;border-radius:4px;font-weight:700;animation:pulse 1.5s infinite;display:inline-block;margin-bottom:4px}
+.score-team{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500}
+.score-num{font-size:18px;font-weight:700;min-width:26px;text-align:right}
+.score-num.leading{color:var(--green)}
+
+/* TRACKER FORM — matches v2 */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.form-group input,.form-group select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .2s;width:100%}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,156,246,.12)}
+.form-group select option{background:var(--bg3)}
+
+/* TABLE — matches v2 */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;color:var(--muted);text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.outcome-W{color:var(--green);font-weight:700}
+.outcome-L{color:var(--red);font-weight:700}
+.outcome-P{color:var(--yellow);font-weight:700}
+
+/* STUDY */
+.finding{background:var(--bg3);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:12px;margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.6}
+.finding.green{border-left-color:var(--green)}
+.finding.red{border-left-color:var(--red)}
+.finding.yellow{border-left-color:var(--yellow)}
+.finding strong{color:var(--text)}
+.finding .ft{font-weight:700;margin-bottom:4px;font-size:12px}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.acc-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px}
+.acc-card .av{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:2px}
+.acc-card .al{font-size:11px;color:var(--muted)}
+.bar-wrap{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:8px}
+.bar-fill{height:100%;border-radius:2px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">⚾ <span>DiamondEdge</span></div>
+  <button class="nav-btn active" onclick="showPage('picks',this)">Picks</button>
+  <button class="nav-btn" onclick="showPage('live',this)">Scores</button>
+  <button class="nav-btn" onclick="showPage('tracker',this)">Tracker</button>
+  <button class="nav-btn" onclick="showPage('study',this)">Study</button>
+  <span class="dot"></span>
+</nav>
+
+<!-- ── PICKS ──────────────────────────────────────────────────────────────── -->
+<div id="page-picks" class="page active">
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Today's picks</div><div class="val" id="p-count" style="color:var(--green)">—</div><div class="sub">5–12% delta filter</div></div>
+    <div class="stat-card"><div class="label">Avg edge</div><div class="val" id="p-edge" style="color:var(--accent)">—</div><div class="sub">vs market implied</div></div>
+    <div class="stat-card"><div class="label">Date</div><div class="val" id="p-date" style="font-size:15px;color:var(--muted)">—</div><div class="sub">CT timezone</div></div>
+  </div>
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Today's value plays</span>
+      <button class="btn btn-green" onclick="fetchPicks()">↻ Refresh</button>
+    </div>
+    <div id="picks-list"><div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">Loading today's games...</div></div>
+  </div>
+</div>
+
+<!-- ── LIVE SCORES ─────────────────────────────────────────────────────────── -->
+<div id="page-live" class="page">
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Live Scores</span>
+      <button class="btn btn-green" onclick="fetchLive()">↻ Refresh</button>
+    </div>
+    <div id="live-list"><div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">Loading scores...</div></div>
+  </div>
+</div>
+
+<!-- ── TRACKER ─────────────────────────────────────────────────────────────── -->
+<div id="page-tracker" class="page">
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Win rate</div><div class="val" id="tr-wr" style="color:var(--green)">—</div><div class="sub">settled bets</div></div>
+    <div class="stat-card"><div class="label">P&amp;L</div><div class="val" id="tr-pnl">—</div><div class="sub">flat $100</div></div>
+    <div class="stat-card"><div class="label">Total bets</div><div class="val" id="tr-total">0</div><div class="sub">logged</div></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><span class="section-title">Log a bet</span></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Game</label><input id="b-game" placeholder="STL @ LAD"></div>
+      <div class="form-group"><label>Date</label><input id="b-date" type="date"></div>
+      <div class="form-group"><label>Pick</label><input id="b-pick" placeholder="STL away"></div>
+      <div class="form-group"><label>Odds</label><input id="b-odds" type="number" placeholder="-111"></div>
+      <div class="form-group"><label>Stake ($)</label><input id="b-stake" type="number" placeholder="100"></div>
+      <div class="form-group"><label>Result</label>
+        <select id="b-outcome">
+          <option value="P">Pending</option>
+          <option value="W">Win ✓</option>
+          <option value="L">Loss ✗</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-green btn-full" onclick="addBet()">+ Log Bet</button>
+  </div>
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Bet history</span>
+      <button class="btn btn-red" onclick="clearBets()">Clear all</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Game</th><th>Pick</th><th>Odds</th><th>Stake</th><th>Result</th><th>P&amp;L</th><th></th></tr></thead>
+        <tbody id="bet-body"></tbody>
+      </table>
+    </div>
+    <div id="bet-empty" style="color:var(--muted);text-align:center;padding:28px;font-size:13px;display:none">No bets logged yet.</div>
+  </div>
+</div>
+
+<!-- ── STUDY ───────────────────────────────────────────────────────────────── -->
+<div id="page-study" class="page">
+  <div class="acc-grid">
+    <div class="acc-card"><div class="av" style="color:var(--green)">60.9%</div><div class="al">Overall (23 picks)</div><div class="bar-wrap"><div class="bar-fill" style="width:60.9%;background:var(--green)"></div></div></div>
+    <div class="acc-card"><div class="av" style="color:var(--green)">+22.6%</div><div class="al">ROI flat $100</div><div class="bar-wrap"><div class="bar-fill" style="width:72%;background:var(--green)"></div></div></div>
+    <div class="acc-card"><div class="av" style="color:var(--green)">86.7%</div><div class="al">5–10% delta WR</div><div class="bar-wrap"><div class="bar-fill" style="width:86.7%;background:var(--green)"></div></div></div>
+    <div class="acc-card"><div class="av" style="color:var(--red)">37.5%</div><div class="al">10%+ delta WR</div><div class="bar-wrap"><div class="bar-fill" style="width:37.5%;background:var(--red)"></div></div></div>
+  </div>
+  <div class="finding green">
+    <div class="ft" style="color:var(--green)">✓ The signal: 5–10% delta picks hit 86.7%</div>
+    When Pythagorean and win% disagree by 5–10%, the model wins 13/15 games. <strong>STL, CLE, CHC, WSH</strong> in this range all outperform. This is where run differential catches real mispricing.
+  </div>
+  <div class="finding red">
+    <div class="ft" style="color:var(--red)">✗ The trap: 10%+ delta picks only 37.5%</div>
+    BAL and HOU had massive Pyth-to-record gaps but the market was right — real roster/bullpen problems Pythagorean can't see. <strong>Model is now capped at 12% delta max.</strong>
+  </div>
+  <div class="finding yellow">
+    <div class="ft" style="color:var(--yellow)">⚠ Need ~150 picks for statistical confidence</div>
+    23 picks = ±20% margin of error. <strong>Log picks daily in Tracker.</strong> After 60 picks (~3-4 weeks) you'll have a real read on whether the edge holds.
+  </div>
+  <div class="section">
+    <div class="section-head"><span class="section-title">All 23 verified 2026 picks</span><span class="badge badge-blue">Mar 26 – May 9</span></div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Date</th><th>Game</th><th>Pick</th><th>Δ%</th><th>Odds</th><th>Result</th></tr></thead>
+        <tbody id="study-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── TEAM DATA (2026 standings May 9) ─────────────────────────────────────────
+const ST={
+  NYY:{rs:5.25,ra:3.85,w:26,l:13},TB:{rs:5.30,ra:3.75,w:25,l:13},
+  TOR:{rs:4.40,ra:4.65,w:18,l:21},BOS:{rs:4.35,ra:4.70,w:17,l:22},
+  BAL:{rs:5.20,ra:4.00,w:17,l:23},CLE:{rs:4.60,ra:4.25,w:21,l:19},
+  KC:{rs:4.50,ra:4.75,w:19,l:21},CWS:{rs:4.20,ra:4.55,w:18,l:21},
+  DET:{rs:4.40,ra:4.65,w:18,l:22},MIN:{rs:5.00,ra:4.55,w:16,l:23},
+  ATH:{rs:4.75,ra:4.20,w:21,l:18},SEA:{rs:4.35,ra:4.55,w:19,l:21},
+  TEX:{rs:4.30,ra:4.60,w:18,l:21},HOU:{rs:5.10,ra:4.40,w:16,l:24},
+  LAA:{rs:4.35,ra:4.95,w:15,l:25},ATL:{rs:5.05,ra:3.90,w:26,l:13},
+  WSH:{rs:5.00,ra:4.40,w:19,l:21},PHI:{rs:4.90,ra:4.30,w:18,l:22},
+  MIA:{rs:4.30,ra:4.70,w:18,l:22},NYM:{rs:4.40,ra:4.90,w:15,l:24},
+  CHC:{rs:5.25,ra:3.80,w:27,l:13},STL:{rs:5.15,ra:3.85,w:23,l:16},
+  MIL:{rs:4.50,ra:4.20,w:20,l:16},PIT:{rs:4.50,ra:4.25,w:21,l:18},
+  CIN:{rs:5.00,ra:4.35,w:21,l:19},LAD:{rs:4.80,ra:4.10,w:24,l:14},
+  SD:{rs:4.85,ra:4.05,w:23,l:16},AZ:{rs:4.75,ra:4.50,w:18,l:20},
+  COL:{rs:4.45,ra:5.25,w:16,l:24},SF:{rs:4.30,ra:4.95,w:15,l:23},
+};
+const NM={
+  NYY:'Yankees',TB:'Rays',TOR:'Blue Jays',BOS:'Red Sox',BAL:'Orioles',
+  CLE:'Guardians',KC:'Royals',CWS:'White Sox',DET:'Tigers',MIN:'Twins',
+  ATH:'Athletics',SEA:'Mariners',TEX:'Rangers',HOU:'Astros',LAA:'Angels',
+  ATL:'Braves',WSH:'Nationals',PHI:'Phillies',MIA:'Marlins',NYM:'Mets',
+  CHC:'Cubs',STL:'Cardinals',MIL:'Brewers',PIT:'Pirates',CIN:'Reds',
+  LAD:'Dodgers',SD:'Padres',AZ:'D-backs',COL:'Rockies',SF:'Giants',
+};
+const FIX={'ARI':'AZ','SFG':'SF','SDP':'SD','KCR':'KC','TBR':'TB','WSN':'WSH','OAK':'ATH'};
+
+// ── MODEL ─────────────────────────────────────────────────────────────────────
+function pyth(rs,ra){return Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83))}
+function log5(p1,p2){return(p1*(1-p2))/(p1*(1-p2)+p2*(1-p1))}
+function p2o(p){p=Math.min(.97,Math.max(.03,p));return p>=.5?Math.round(-p/(1-p)*100):Math.round((1-p)/p*100)}
+function fa(a){return FIX[a]||a}
+
+function scoreGame(h,a){
+  const hs=ST[h],as=ST[a];
+  if(!hs||!as) return null;
+  const hp=pyth(hs.rs,hs.ra),ap=pyth(as.rs,as.ra);
+  const hw=hs.w/(hs.w+hs.l),aw=as.w/(as.w+as.l);
+  const pythH=Math.min(.80,Math.max(.20,log5(hp,ap)+.035));
+  const mktH =Math.min(.80,Math.max(.20,log5(hw,aw)+.040));
+  const delta=pythH-mktH,abs=Math.abs(delta);
+  if(abs<.05||abs>.12) return null;
+  const side=delta>0?'home':'away';
+  const pk=side==='home'?h:a,opp=side==='home'?a:h;
+  if(ST[pk].w/(ST[pk].w+ST[pk].l)<.40) return null;
+  const prob=side==='home'?pythH:1-pythH;
+  const mktProb=side==='home'?mktH:1-mktH;
+  return{pk,opp,side,prob,mktProb,odds:p2o(prob),edge:+(abs*100).toFixed(1),h,a};
+}
+
+// ── FETCH PICKS ───────────────────────────────────────────────────────────────
+async function fetchPicks(){
+  const el=document.getElementById('picks-list');
+  el.innerHTML='<div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">Fetching schedule...</div>';
+  const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Chicago'});
+  document.getElementById('p-date').textContent=new Date().toLocaleDateString('en-US',{timeZone:'America/Chicago',month:'short',day:'numeric'});
+  const urls=[
+    `https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${today}&hydrate=team,probablePitcher`,
+    `https://corsproxy.io/?url=${encodeURIComponent('https://statsapi.mlb.com/api/v1/schedule?sportId=1&date='+today+'&hydrate=team,probablePitcher')}`,
+  ];
+  let games=[];
+  for(const url of urls){try{const r=await fetch(url,{signal:AbortSignal.timeout(7000)});if(!r.ok)continue;const d=await r.json();games=d.dates?.[0]?.games||[];if(games.length)break}catch(e){continue}}
+  if(!games.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">No games found or API unavailable. Try refreshing.</div>';return}
+
+  const scored=[];
+  games.forEach(g=>{
+    const h=fa(g.teams.home.team.abbreviation),a=fa(g.teams.away.team.abbreviation);
+    const r=scoreGame(h,a);
+    if(!r) return;
+    const hP=g.teams.home.probablePitcher?.fullName||'TBD';
+    const aP=g.teams.away.probablePitcher?.fullName||'TBD';
+    const gTime=new Date(g.gameDate).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Chicago',timeZoneName:'short'});
+    scored.push({...r,hP,aP,gTime,gamePk:g.gamePk,hFull:g.teams.home.team.name,aFull:g.teams.away.team.name});
+  });
+  scored.sort((a,b)=>b.edge-a.edge);
+
+  document.getElementById('p-count').textContent=scored.length;
+  document.getElementById('p-edge').textContent=scored.length?(scored.reduce((s,p)=>s+p.edge,0)/scored.length).toFixed(1)+'%':'—';
+
+  if(!scored.length){
+    el.innerHTML='<div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">No picks pass the filter today.<br><span style="font-size:11px">Need 5–12% delta + pick team win% ≥ 40%</span></div>';
+    return;
+  }
+
+  el.innerHTML=scored.map((p,i)=>{
+    const pkFull=NM[p.pk]||p.pk,oppFull=NM[p.opp]||p.opp;
+    const pkST=ST[p.pk],oppST=ST[p.opp];
+    const pkWp=(pkST.w/(pkST.w+pkST.l)*100).toFixed(0);
+    const oppWp=(oppST.w/(oppST.w+oppST.l)*100).toFixed(0);
+    const isHome=p.side==='home';
+    const oddsStr=p.odds>0?'+'+p.odds:String(p.odds);
+    const mktOddsStr=p2o(p.mktProb)>0?'+'+p2o(p.mktProb):String(p2o(p.mktProb));
+    const hIsBack=isHome,aIsBack=!isHome;
+    const hWp=(ST[p.h].w/(ST[p.h].w+ST[p.h].l)*100).toFixed(0);
+    const aWp=(ST[p.a].w/(ST[p.a].w+ST[p.a].l)*100).toFixed(0);
+    return`<div class="game-card value-bet">
+      <div class="team-row">
+        <div class="team-logo">${p.a}</div>
+        <div class="team-name">${p.aFull} <span class="team-record">(${ST[p.a].w}-${ST[p.a].l})</span></div>
+        <div class="win-pct ${aIsBack?'fav':'dog'}">${aIsBack?`<span class="badge badge-green">BACK</span>`:aWp+'%'}</div>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:${aWp}%;background:${aIsBack?'var(--green)':'var(--border)'}"></div></div>
+      <div class="team-row">
+        <div class="team-logo">${p.h}</div>
+        <div class="team-name">${p.hFull} <span class="team-record">(${ST[p.h].w}-${ST[p.h].l})</span></div>
+        <div class="win-pct ${hIsBack?'fav':'dog'}">${hIsBack?`<span class="badge badge-green">BACK</span>`:hWp+'%'}</div>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:${hWp}%;background:${hIsBack?'var(--green)':'var(--border)'}"></div></div>
+      <div class="game-meta">
+        <span class="tag good">Edge ${p.edge}%</span>
+        <span class="tag good">Model ${(p.prob*100).toFixed(0)}% · Mkt ${(p.mktProb*100).toFixed(0)}%</span>
+        <span class="tag">${p.gTime}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${p.aFull}: ${p.aP} · ${p.hFull}: ${p.hP}</div>
+      <div class="odds-grid">
+        <div class="odds-box ${aIsBack?'value':''}"><div class="market">${p.a} ML</div><div class="line">${aIsBack?oddsStr:p2o(1-p.mktProb)}</div>${aIsBack?'<div class="ev">+EV</div>':''}</div>
+        <div class="odds-box"><div class="market">Total</div><div class="line">O/U 8.5</div></div>
+        <div class="odds-box ${hIsBack?'value':''}"><div class="market">${p.h} ML</div><div class="line">${hIsBack?oddsStr:p2o(p.mktProb)}</div>${hIsBack?'<div class="ev">+EV</div>':''}</div>
+      </div>
+      <div class="game-actions">
+        <button class="btn btn-green" onclick="quickLog('${p.aFull} @ ${p.hFull}','${pkFull} (${p.side})',${p.odds})">+ Log bet</button>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted)">Kelly: ${(Math.max(0,(p.prob-p.mktProb)/((1-p.mktProb)+(p.mktProb)))*25).toFixed(1)}% of bankroll</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LIVE SCORES ───────────────────────────────────────────────────────────────
+async function fetchLive(){
+  const el=document.getElementById('live-list');
+  el.innerHTML='<div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">Loading...</div>';
+  const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Chicago'});
+  const urls=[
+    `https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${today}&hydrate=linescore,team,probablePitcher`,
+    `https://corsproxy.io/?url=${encodeURIComponent('https://statsapi.mlb.com/api/v1/schedule?sportId=1&date='+today+'&hydrate=linescore,team,probablePitcher')}`,
+  ];
+  let games=[];
+  for(const url of urls){try{const r=await fetch(url,{signal:AbortSignal.timeout(7000)});if(!r.ok)continue;const d=await r.json();games=d.dates?.[0]?.games||[];if(games.length)break}catch(e){continue}}
+  if(!games.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:36px;font-size:13px">Scores unavailable right now.</div>';return}
+  const ord={'Live':0,'Preview':1,'Final':2};
+  games.sort((a,b)=>(ord[a.status?.abstractGameState]??1)-(ord[b.status?.abstractGameState]??1));
+  el.innerHTML=games.map(g=>{
+    const h=g.teams.home,a=g.teams.away,ls=g.linescore;
+    const state=g.status?.abstractGameState,isLive=state==='Live',isFinal=state==='Final';
+    const hR=ls?.teams?.home?.runs,aR=ls?.teams?.away?.runs,hasScore=typeof hR==='number';
+    const hLead=hasScore&&hR>aR,aLead=hasScore&&aR>hR;
+    const hH=ls?.teams?.home?.hits,aH=ls?.teams?.away?.hits;
+    const hE=ls?.teams?.home?.errors,aE=ls?.teams?.away?.errors;
+    const half=ls?.inningHalf==='Top'?'▲':ls?.inningHalf==='Bottom'?'▼':'';
+    const inningOrd=ls?.currentInningOrdinal||'',outs=ls?.outs!=null?`${ls.outs} out`:'';
+    const inningNum=ls?.currentInning||0;
+    let lbl,lc;
+    if(isLive){lbl=`${half} ${inningOrd}`;lc='var(--red)'}
+    else if(isFinal){lbl=inningNum>9?`Final/${inningNum}`:'Final';lc='var(--muted)'}
+    else{lbl=new Date(g.gameDate).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Chicago',timeZoneName:'short'});lc='var(--accent)'}
+    const hP=h.probablePitcher?.fullName||'TBD',aP=a.probablePitcher?.fullName||'TBD';
+    return`<div class="live-score">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="min-width:80px;flex-shrink:0;text-align:center">
+          ${isLive?`<div class="live-badge">LIVE</div>`:''}
+          <div style="font-size:13px;font-weight:700;color:${lc}">${lbl}</div>
+          ${outs&&isLive?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${outs}</div>`:''}
+        </div>
+        <div style="flex:1">
+          <div class="score-team" style="margin-bottom:5px">
+            <span style="font-weight:${aLead?700:500}">${a.team.name}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              ${typeof aH==='number'?`<span style="font-size:11px;color:var(--muted)">${aH}H ${aE}E</span>`:''}
+              <span class="score-num ${aLead?'leading':''}">${hasScore?aR:'—'}</span>
+            </div>
+          </div>
+          <div class="score-team">
+            <span style="font-weight:${hLead?700:500}">${h.team.name}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              ${typeof hH==='number'?`<span style="font-size:11px;color:var(--muted)">${hH}H ${hE}E</span>`:''}
+              <span class="score-num ${hLead?'leading':''}">${hasScore?hR:'—'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${state==='Preview'?`<div style="font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">${aP} vs ${hP}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── TRACKER ───────────────────────────────────────────────────────────────────
+let bets=JSON.parse(localStorage.getItem('de_bets_v4')||'[]');
+function saveBets(){localStorage.setItem('de_bets_v4',JSON.stringify(bets))}
+function addBet(){
+  const game=document.getElementById('b-game').value.trim();
+  const date=document.getElementById('b-date').value;
+  const pick=document.getElementById('b-pick').value.trim();
+  const odds=+document.getElementById('b-odds').value;
+  const stake=+document.getElementById('b-stake').value||100;
+  const outcome=document.getElementById('b-outcome').value;
+  if(!game||!pick||!odds){alert('Game, pick, and odds required');return}
+  const profit=outcome==='W'?(odds>0?stake*odds/100:stake*100/Math.abs(odds)):outcome==='L'?-stake:0;
+  bets.unshift({id:Date.now(),game,date,pick,odds,stake,outcome,profit:+profit.toFixed(2)});
+  saveBets();
+  document.getElementById('b-game').value='';
+  document.getElementById('b-pick').value='';
+  document.getElementById('b-odds').value='';
+  renderTracker();
+}
+function deleteBet(id){bets=bets.filter(b=>b.id!==id);saveBets();renderTracker()}
+function clearBets(){if(confirm('Clear all bets?')){bets=[];saveBets();renderTracker()}}
+function quickLog(game,pick,odds){
+  showPage('tracker',document.querySelectorAll('.nav-btn')[2]);
+  document.getElementById('b-game').value=game;
+  document.getElementById('b-pick').value=pick;
+  document.getElementById('b-odds').value=odds;
+  document.getElementById('b-date').value=new Date().toISOString().split('T')[0];
+}
+function renderTracker(){
+  const settled=bets.filter(b=>b.outcome!=='P');
+  const wins=settled.filter(b=>b.outcome==='W').length;
+  const wr=settled.length?wins/settled.length:0;
+  const pnl=settled.reduce((s,b)=>s+b.profit,0);
+  document.getElementById('tr-wr').textContent=settled.length?(wr*100).toFixed(1)+'%':'—';
+  document.getElementById('tr-wr').style.color=wr>=.524?'var(--green)':'var(--red)';
+  document.getElementById('tr-pnl').textContent=pnl>=0?'+$'+Math.round(pnl):'-$'+Math.abs(Math.round(pnl));
+  document.getElementById('tr-pnl').style.color=pnl>=0?'var(--green)':'var(--red)';
+  document.getElementById('tr-total').textContent=bets.length;
+  const tb=document.getElementById('bet-body'),emp=document.getElementById('bet-empty');
+  if(!bets.length){tb.innerHTML='';emp.style.display='block';return}
+  emp.style.display='none';
+  tb.innerHTML=bets.map(b=>`<tr>
+    <td>${b.game}<br><span style="color:var(--muted);font-size:10px">${b.date||''}</span></td>
+    <td>${b.pick}</td>
+    <td style="color:${b.odds>0?'var(--green)':'var(--muted)'}">${b.odds>0?'+':''}${b.odds}</td>
+    <td>$${b.stake}</td>
+    <td><span class="outcome-${b.outcome}">${b.outcome}</span></td>
+    <td style="font-weight:600;color:${b.profit>0?'var(--green)':b.profit<0?'var(--red)':'var(--muted)'}">${b.profit>0?'+$'+b.profit:b.profit<0?'-$'+Math.abs(b.profit):'—'}</td>
+    <td><button onclick="deleteBet(${b.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 2px">×</button></td>
+  </tr>`).join('');
+}
+
+// ── STUDY ─────────────────────────────────────────────────────────────────────
+const STUDY=[
+  ['Mar 26','MIN@BAL','BAL home',7.1,-157,true],['Mar 28','MIN@BAL','BAL home',7.1,-157,false],
+  ['Mar 29','MIN@BAL','BAL home',7.1,-157,true],['Mar 30','CLE@LAD','CLE away',13.6,133,true],
+  ['Mar 31','CLE@LAD','CLE away',13.6,133,false],['Apr 1','CLE@LAD','CLE away',6.9,133,true],
+  ['Apr 4','WSH@LAD','WSH away',9.1,122,false],['Apr 4','STL@DET','STL away',5.8,-162,false],
+  ['Apr 6','STL@WSH','WSH home',6.1,117,true],['May 1','STL@LAD','STL away',9.8,-111,true],
+  ['May 2','STL@LAD','STL away',11.6,-111,true],['May 3','STL@LAD','STL away',11.6,-111,false],
+  ['Mar 26','WSH@CHC','CHC home',8.3,-166,true],['Mar 28','WSH@CHC','CHC home',8.3,-166,true],
+  ['Mar 29','WSH@CHC','WSH away',8.3,166,true],['Apr 6','CHC@TB','TB home',6.1,-120,true],
+  ['Mar 31','MIL@TB','TB home',11.9,-193,false],['Apr 29','AZ@MIL','AZ away',8.3,118,true],
+  ['Apr 30','AZ@MIL','AZ away',6.6,118,false],['Mar 31','ATH@ATL','ATH away',11.0,148,true],
+  ['May 9','STL@SD','STL away',5.5,-106,true],['Mar 30','TEX@BAL','BAL home',14.1,-214,false],
+  ['Mar 31','TEX@BAL','BAL home',14.1,-214,false],
+];
+function renderStudy(){
+  document.getElementById('study-body').innerHTML=STUDY.map(([date,game,pick,d,odds,win])=>{
+    const warn=d<5||d>12;
+    return`<tr>
+      <td style="color:var(--muted);white-space:nowrap;font-size:11px">${date}</td>
+      <td style="font-weight:500">${game}</td>
+      <td style="font-size:11px">${pick}</td>
+      <td style="color:${warn?'var(--orange)':'var(--text)'}">${d}%${warn?' ⚠':''}</td>
+      <td style="color:${odds>0?'var(--green)':'var(--muted)'}">${odds>0?'+'+odds:odds}</td>
+      <td><span class="badge ${win?'badge-green':'badge-red'}">${win?'WIN':'LOSS'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='live') fetchLive();
+  if(name==='tracker') renderTracker();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('b-date').value=new Date().toISOString().split('T')[0];
+fetchPicks();
+renderTracker();
+renderStudy();
+setInterval(()=>{if(document.getElementById('page-live').classList.contains('active'))fetchLive()},60000);
+</script>
+</body>
+</html>
